@@ -1,3 +1,6 @@
+using GymManagementBL;
+using GymManagementBL.Service.Classes;
+using GymManagementBL.Service.Interfaces;
 using GymManagementDL.Data.Context;
 using GymManagementDL.Data.Dataseeding;
 using GymManagementDL.Repository.Classes;
@@ -9,18 +12,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<GymDbContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetSection("ConnectionString")["DefaultConnection"]);
+    option.UseSqlServer(builder.Configuration.GetSection("ConnectionStrings")["DefaultConnection"]);
 });
-//builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-//builder.Services.AddScoped<IPlanRepository, PlanRepository>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddAutoMapper(x => x.AddProfile(new MappingProfile()));
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 var app = builder.Build();
 #region DataSeeding
 using var scope = app.Services.CreateScope();
 var dbContext = scope.ServiceProvider.GetRequiredService<GymDbContext>();
-var pendingMigration = dbContext.Database.GetPendingMigrations();
-if (pendingMigration?.Any() ?? false) dbContext.Database.Migrate();
+//var pendingMigration = dbContext.Database.GetPendingMigrations();
+//if (pendingMigration?.Any() ?? false) dbContext.Database.Migrate();
 GymDBContextSeeding.SeedData(dbContext, app.Environment.ContentRootPath);
 #endregion
 

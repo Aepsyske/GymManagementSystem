@@ -10,5 +10,10 @@ namespace GymManagementBL.Service.Interfaces
     public interface ISessionService
     {
         IEnumerable<SessionViewModel> GetAllSessions();
+        SessionViewModel? GetSessionByID(int ID);
+        bool CreateSession(CreateSessionViewModel createSession);
+        UpdateSessionViewModel? GetToUpdateSession(int ID);
+        bool UpdateSession(int ID, UpdateSessionViewModel updateSession);
+        bool RemoveSession(int ID);
     }
 }
